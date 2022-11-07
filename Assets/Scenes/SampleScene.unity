@@ -921,9 +921,9 @@ RectTransform:
   m_Father: {fileID: 333191389}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 181}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 0, y: -130}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1543297463
@@ -938,7 +938,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: beea3b0def2a8094493a6babfe8b06aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _guessPrefab: {fileID: 3271800776750376028, guid: 444e6484e7c8feb4ba07337654776554, type: 3}
+  _wrongColor: {r: 0.5566038, g: 0, b: 0, a: 1}
+  _semiColor: {r: 0.5471698, g: 0.47597817, b: 0, a: 1}
+  _correctColor: {r: 0, g: 0.6698113, b: 0.09791695, a: 1}
+  _guessPrefab: {fileID: 4218325413792601450, guid: ff2f89d25ee0e4d488942ef7a0e0b6d2, type: 3}
 --- !u!1 &1625153966
 GameObject:
   m_ObjectHideFlags: 0

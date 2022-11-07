@@ -30,12 +30,14 @@ public class WordleScript : MonoBehaviour
         _gameOver = false;
         _guessesMade = 0;
         targetWord = WordleDictionary.GetRandomWord();
-        _guessParent.InitializeGuesses(_guessesAllowed);
+        _guessParent.InitializeGuesses(_guessesAllowed, _charsPerWord);
         
     }
 
     public void MakeGuess(string guess)
     {
+        guess = guess.ToLower().Trim(); // clean guess
+        
         if (_gameOver)
         {
             return;
@@ -45,11 +47,17 @@ public class WordleScript : MonoBehaviour
         {
             return;
         }
-        
-        _guessParent.SetGuess(_guessesMade, guess);
-        _guessesMade += 1;
 
-        if (guess.ToLower() == targetWord.ToLower())
+        if (guesses.Contains(guess))
+        {
+            return; // avoid same guess
+        }
+        
+        _guessParent.SetGuess(_guessesMade, guess, targetWord);
+        _guessesMade += 1;
+        guesses.Add(guess);
+
+        if (guess == targetWord.ToLower().Trim())
         {
             Winner();
         }
