@@ -1,24 +1,27 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using TMPro.EditorUtilities;
+//using TMPro.EditorUtilities;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class GuessParent : MonoBehaviour
 {
-    [SerializeField] private Color _wrongColor;
-    [SerializeField] private Color _semiColor;
-    [SerializeField] private Color _correctColor;
-    
     [SerializeField] private GameObject _guessPrefab;
 
     private List<GameObject> _guessObjects = new List<GameObject>();
     private List<Button> _guessObjectsButtons = new List<Button>();
     private List<TMP_Text> _guessObjectsTexts = new List<TMP_Text>();
 
+    private WordleScript _gameManager;
     private int _settingCharsPerWord;
 
+
+    void Awake()
+    {
+        _gameManager = FindObjectOfType<WordleScript>();
+    }
+    
     private void CleanUp()
     {
         foreach (GameObject go in _guessObjects)
@@ -79,22 +82,23 @@ public class GuessParent : MonoBehaviour
         {
             _guessObjectsTexts[indexOffset + i].text = guess[i].ToString().ToUpper();
 
-            if (guess[i].ToString().ToLower() == correctWord[i].ToString().ToLower())
+            if (guess[i].ToString().ToUpper() == correctWord[i].ToString().ToUpper())
             {
-                SetColor(indexOffset + i, _correctColor);
-            } else if (correctWord.ToLower().Contains(guess[i].ToString().ToLower()))
+                SetColor(indexOffset + i, _gameManager.Colors()["correct"]);
+            } else if (correctWord.ToUpper().Contains(guess[i].ToString().ToUpper()))
             {
-                SetColor(indexOffset + i, _semiColor);
+                SetColor(indexOffset + i, _gameManager.Colors()["semi"]);
             }
             else
             {
-                SetColor(indexOffset + i, _wrongColor);
+                SetColor(indexOffset + i, _gameManager.Colors()["wrong"]);
             }
         }
     }
 
     public void SetColor(int idx, Color col)
     {
+        Debug.Log("GuessParent:" + idx + "," + col);
         ColorBlock cb = _guessObjectsButtons[idx].colors;
         cb.disabledColor = col;
         _guessObjectsButtons[idx].colors = cb;

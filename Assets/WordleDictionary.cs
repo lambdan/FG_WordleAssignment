@@ -1,31 +1,38 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public static class WordleDictionary
 {
     public static string GetRandomWord()
     {
-        return _words[Random.Range(0, _words.Count)];
+        return _words[Random.Range(0, _words.Length)];
     }
 
     public static int GetWordCount()
     {
-        return _words.Count;
+        return _words.Length;
     }
 
     public static bool IsInDictionary(string word)
     {
-        return _words.Contains(word.ToLower());
+        // _words.Contains always returns false?
+        foreach (string w in _words)
+        {
+            if (w.ToLower().Trim() == word.ToLower().Trim())
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static void SetWords(string[] w)
     {
-        // StackOverflowException if i put in all 14k words in the list below in code
-        // Setting them at runtime works
-        _words = new List<string>(w);
+        _words = w;
     }
-
-    private static List<string> _words = new List<string>();
+    
+    private static string[] _words;
 
 
 }
