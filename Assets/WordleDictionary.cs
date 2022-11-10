@@ -19,6 +19,10 @@ public static class WordleDictionary
         // _words.Contains always returns false?
         foreach (string w in _words)
         {
+            if (w.ToLower()[0] != word.ToLower()[0])
+            {
+                continue;
+            }
             if (w.ToLower().Trim() == word.ToLower().Trim())
             {
                 return true;

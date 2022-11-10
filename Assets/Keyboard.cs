@@ -24,6 +24,8 @@ public class Keyboard : MonoBehaviour
 
     private List<Button> _buttons = new List<Button>();
 
+    private bool _activated;
+    
     void GenerateKeyboard()
     {
         float start_x = _rt.rect.width / 2.5f;
@@ -92,6 +94,16 @@ public class Keyboard : MonoBehaviour
         }
     }
 
+    public void DisableKeyboard()
+    {
+        _activated = false;
+    }
+
+    public void EnableKeyboard()
+    {
+        _activated = true;
+    }
+
     public void Shake()
     {
         StartCoroutine(KeyboardShake(0.75f));
@@ -134,16 +146,25 @@ public class Keyboard : MonoBehaviour
         {
             return;
         }
-        
+
+        if (!_activated)
+        {
+            return;
+        }
+
         entry[charIndex] = c;
         
-        Debug.Log(c);
+        // Debug.Log(c);
         _inputPreview.SetCharacter(charIndex, c);
         charIndex += 1;
     }
 
     public void PressedEnterKey()
     {
+        if (!_activated)
+        {
+            return;
+        }
         _gameManager.MakeGuess(entry.ArrayToString());
         UpdateButtonColors();
         ClearEntry();
@@ -151,8 +172,11 @@ public class Keyboard : MonoBehaviour
 
     public void PressedBackspaceKey()
     {
-        Debug.Log("Backspace?");
-        
+        if (!_activated)
+        {
+            return;
+        }
+
         charIndex -= 1;
         if (charIndex <= 0)
         {

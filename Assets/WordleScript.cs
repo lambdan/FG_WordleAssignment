@@ -48,6 +48,7 @@ public class WordleScript : MonoBehaviour
         _gameOver = false;
         _guessesMade = 0;
         _keyboard.CleanUp();
+        _keyboard.EnableKeyboard();
         
         // re init
         targetWord = WordleDictionary.GetRandomWord().ToUpper();
@@ -56,18 +57,18 @@ public class WordleScript : MonoBehaviour
     }
 
     public void MakeGuess(string guess)
-    {
+    {        
+        if (_gameOver)
+        {
+            return;
+        }
+        
         guess = guess.ToUpper().Trim(); // clean guess
         
         if (!WordleDictionary.IsInDictionary(guess))
         {
             _keyboard.Shake();
             return; // word not in dictionary
-        }
-
-        if (_gameOver)
-        {
-            return;
         }
 
         if (guess.Length != _charsPerWord)
@@ -99,6 +100,7 @@ public class WordleScript : MonoBehaviour
     void Winner()
     {
         _gameOver = true;
+        _keyboard.DisableKeyboard();
         
         _statusText.gameObject.SetActive(true);
         _statusText.text = "Winner!";
@@ -108,6 +110,7 @@ public class WordleScript : MonoBehaviour
     void Loser()
     {
         _gameOver = true;
+        _keyboard.DisableKeyboard();
         
         _statusText.gameObject.SetActive(true);
         _statusText.text = "Loser! The word was: " + targetWord;

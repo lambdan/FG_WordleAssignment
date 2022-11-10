@@ -98,7 +98,6 @@ public class GuessParent : MonoBehaviour
 
     public void SetColor(int idx, Color col)
     {
-        Debug.Log("GuessParent:" + idx + "," + col);
         ColorBlock cb = _guessObjectsButtons[idx].colors;
         cb.disabledColor = col;
         _guessObjectsButtons[idx].colors = cb;
