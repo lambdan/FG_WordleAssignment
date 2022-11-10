@@ -16,7 +16,7 @@ public class WordleScript : MonoBehaviour
     [SerializeField] private GuessParent _guessParent;
     
     private int _charsPerWord = 5;
-    private int _guessesAllowed = 5;
+    private int _guessesAllowed = 6;
 
     private bool _gameOver;
     private int _guessesMade;
