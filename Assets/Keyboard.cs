@@ -88,18 +88,14 @@ public class Keyboard : MonoBehaviour
 
     void UpdateButtonColors()
     {
-        int length = (int)'Z' - (int)'A';
-
-        //Debug.Log("UpdateButtonColors" + length);
-        for (int i = 0; i <= length; i++)
+        for (int i = 0; i < keyboardLayout.Count; i++)
         {
-            char c = (char)(i + (int)'A');
-            //Debug.Log("UpdateButtonColors:" + c);
-
+            char c = keyboardLayout[i];
             if (_gameManager.CorrectChars().Contains(c))
             {
                 SetColor(i, _gameManager.Colors()["correct"]);
-            } else if (_gameManager.SemiChars().Contains(c))
+            }
+            else if (_gameManager.SemiChars().Contains(c))
             {
                 SetColor(i, _gameManager.Colors()["semi"]);
             }
