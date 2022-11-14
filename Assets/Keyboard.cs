@@ -25,7 +25,15 @@ public class Keyboard : MonoBehaviour
     private List<Button> _buttons = new List<Button>();
 
     private bool _activated;
-    
+
+
+    private List<char> keyboardLayout = new List<char>()
+    {
+        'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P',
+        'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L',
+        'Z', 'X', 'C', 'V', 'B', 'N', 'M'
+    };
+
     void GenerateKeyboard()
     {
         float start_x = _rt.rect.width / 2.5f;
@@ -33,41 +41,49 @@ public class Keyboard : MonoBehaviour
 
         float x_offset = -start_x;
         float y_offset = +start_y;
-        
-        for (int i = (int)'A'; i <= (int)'Z'; i++)
+
+        foreach (char c in keyboardLayout)
         {
-            char letter = (char)i;
+            Debug.Log(c);
+            char letter = c;
             GameObject go = Instantiate(characterKey, transform);
             go.transform.position = new Vector2(transform.position.x + x_offset, transform.position.y + y_offset);
             go.GetComponentInChildren<TMP_Text>().text = letter.ToString();
 
-            go.GetComponent<Button>().onClick.AddListener(() =>
-            {
-                PressedCharacterKey(letter);
-            });
-            
+            go.GetComponent<Button>().onClick.AddListener(() => { PressedCharacterKey(letter); });
+
             _buttons.Add(go.GetComponent<Button>());
-            
-            x_offset += 32f;
-            
-            if (x_offset >= _rt.rect.width/2.2f)
+
+            if (c == 'P')
             {
+                // new row
                 x_offset = -start_x;
                 y_offset -= 32f;
             }
+            else if (c == 'L')
+            {
+                x_offset += 32f;
+                GameObject backspaceKeyGO = Instantiate(backspaceKey, transform);
+                backspaceKeyGO.transform.position =
+                    new Vector2(transform.position.x + x_offset, transform.position.y + y_offset);
+                backspaceKeyGO.GetComponent<Button>().onClick.AddListener(PressedBackspaceKey);
+
+                y_offset -= 32f;
+                x_offset = -start_x;
+            }
+            else if (c == 'M')
+            {
+                x_offset += 64f;
+                GameObject enterKeyGO = Instantiate(enterKey, transform);
+                enterKeyGO.transform.position =
+                    new Vector2(transform.position.x + x_offset, transform.position.y + y_offset);
+                enterKeyGO.GetComponent<Button>().onClick.AddListener(PressedEnterKey);
+            }
+            else
+            {
+                x_offset += 32f;
+            }
         }
-
-        x_offset += 2 * 32f;
-        // enter key
-        GameObject enterKeyGO = Instantiate(enterKey, transform);
-        enterKeyGO.transform.position = new Vector2(transform.position.x + x_offset, transform.position.y + y_offset);
-        enterKeyGO.GetComponent<Button>().onClick.AddListener(PressedEnterKey);
-
-        y_offset -= 32f;
-        // backspace key
-        GameObject backspaceKeyGO = Instantiate(backspaceKey, transform);
-        backspaceKeyGO.transform.position = new Vector2(transform.position.x + x_offset, transform.position.y + y_offset);
-        backspaceKeyGO.GetComponent<Button>().onClick.AddListener(PressedBackspaceKey);
     }
 
     void UpdateButtonColors()
@@ -138,6 +154,7 @@ public class Keyboard : MonoBehaviour
         GenerateKeyboard();
 
         CleanUp();
+        
     }
 
     public void PressedCharacterKey(char c)
