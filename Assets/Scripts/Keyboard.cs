@@ -14,12 +14,12 @@ public class Keyboard : MonoBehaviour
     [SerializeField] private GameObject characterKey;
     [SerializeField] private GameObject enterKey;
     [SerializeField] private GameObject backspaceKey;
-
-    private WordleScript _gameManager;
+    
+    public static Keyboard Instance { get; private set; }
     private InputPreview _inputPreview;
     private RectTransform _rt;
 
-    private int charIndex = 0;
+    private int charIndex; // = 0
     private char[] entry;
 
     private List<Button> _buttons = new List<Button>();
@@ -27,7 +27,7 @@ public class Keyboard : MonoBehaviour
     private bool _activated;
 
 
-    private List<char> keyboardLayout = new List<char>()
+    private char[] keyboardLayout = new char[]
     {
         'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P',
         'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L',
@@ -44,7 +44,7 @@ public class Keyboard : MonoBehaviour
 
         foreach (char c in keyboardLayout)
         {
-            Debug.Log(c);
+            // Debug.Log(c);
             char letter = c;
             GameObject go = Instantiate(characterKey, transform);
             go.transform.position = new Vector2(transform.position.x + x_offset, transform.position.y + y_offset);
@@ -88,20 +88,20 @@ public class Keyboard : MonoBehaviour
 
     void UpdateButtonColors()
     {
-        for (int i = 0; i < keyboardLayout.Count; i++)
+        for (int i = 0; i < keyboardLayout.Length; i++)
         {
             char c = keyboardLayout[i];
-            if (_gameManager.CorrectChars().Contains(c))
+            if (WordleScript.Instance.CorrectChars().Contains(c))
             {
-                SetColor(i, _gameManager.Colors()["correct"]);
+                SetColor(i, WordleScript.Instance.Colors()["correct"]);
             }
-            else if (_gameManager.SemiChars().Contains(c))
+            else if (WordleScript.Instance.SemiChars().Contains(c))
             {
-                SetColor(i, _gameManager.Colors()["semi"]);
+                SetColor(i, WordleScript.Instance.Colors()["semi"]);
             }
-            else if (_gameManager.WrongChars().Contains(c))
+            else if (WordleScript.Instance.WrongChars().Contains(c))
             {
-                SetColor(i, _gameManager.Colors()["wrong"]);
+                SetColor(i, WordleScript.Instance.Colors()["wrong"]);
             }
         }
     }
@@ -133,7 +133,7 @@ public class Keyboard : MonoBehaviour
     
     void ClearEntry()
     {
-        entry = new char[_gameManager.HowManyChars()];
+        entry = new char[WordleScript.Instance.HowManyChars()];
         for (int i = 0; i < entry.Length; i++)
         {
             _inputPreview.SetCharacter(i, ' ');
@@ -141,21 +141,32 @@ public class Keyboard : MonoBehaviour
 
         charIndex = 0;
     }
-    
+
     void Awake()
     {
-        _gameManager = FindObjectOfType<WordleScript>();
-        _inputPreview = FindObjectOfType<InputPreview>();
-        _rt = GetComponent<RectTransform>(); 
-        GenerateKeyboard();
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this.gameObject);
+        }
+        else
+        {
+            Instance = this;
+        }
 
-        CleanUp();
+        _inputPreview = FindObjectOfType<InputPreview>();
+        _rt = GetComponent<RectTransform>();
+        GenerateKeyboard();
+    }
+
+    void Start()
+    {
         
+        CleanUp();
     }
 
     public void PressedCharacterKey(char c)
     {
-        if (charIndex >= _gameManager.HowManyChars())
+        if (charIndex >= WordleScript.Instance.HowManyChars())
         {
             return;
         }
@@ -166,8 +177,6 @@ public class Keyboard : MonoBehaviour
         }
 
         entry[charIndex] = c;
-        
-        // Debug.Log(c);
         _inputPreview.SetCharacter(charIndex, c);
         charIndex += 1;
     }
@@ -178,7 +187,7 @@ public class Keyboard : MonoBehaviour
         {
             return;
         }
-        _gameManager.MakeGuess(entry.ArrayToString());
+        WordleScript.Instance.MakeGuess(entry.ArrayToString());
         UpdateButtonColors();
         ClearEntry();
     }
@@ -199,12 +208,11 @@ public class Keyboard : MonoBehaviour
         _inputPreview.SetCharacter(charIndex, ' ');
     }
     
-    public void SetColor(int idx, Color col)
+    public void SetColor(int keyIndex, Color col)
     {
-        ColorBlock cb = _buttons[idx].colors;
-        //cb.disabledColor = col;
+        ColorBlock cb = _buttons[keyIndex].colors;
         cb.normalColor = col;
-        _buttons[idx].colors = cb;
+        _buttons[keyIndex].colors = cb;
     }
 
     IEnumerator KeyboardShake(float duration)

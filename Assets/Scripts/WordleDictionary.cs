@@ -16,27 +16,22 @@ public static class WordleDictionary
 
     public static bool IsInDictionary(string word)
     {
-        // _words.Contains always returns false?
-        foreach (string w in _words)
-        {
-            if (w.ToLower()[0] != word.ToLower()[0])
-            {
-                continue;
-            }
-            if (w.ToLower().Trim() == word.ToLower().Trim())
-            {
-                return true;
-            }
-        }
-        return false;
+        return _wordsHashSet.Contains(word.ToLower().Trim());
     }
 
     public static void SetWords(string[] w)
     {
         _words = w;
+        _wordsHashSet = new HashSet<string>();
+        foreach (string s in w)
+        {
+            // checking if a HashSet contains something is faster, apparently
+            _wordsHashSet.Add(s.ToLower().Trim());
+        }
     }
     
     private static string[] _words;
+    private static HashSet<string> _wordsHashSet;
 
 
 }

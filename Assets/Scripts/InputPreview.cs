@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -8,22 +7,23 @@ public class InputPreview : MonoBehaviour
     [SerializeField] private GameObject _inputPreviewButton;
     
     private List<TMP_Text> _tileTexts = new List<TMP_Text>();
-    private WordleScript _gameManager;
-    private RectTransform _rt;
     private float _buttonSize;
 
     void Awake()
     {
-        _rt = GetComponent<RectTransform>();
-        _gameManager = FindObjectOfType<WordleScript>();
         _buttonSize = _inputPreviewButton.GetComponent<RectTransform>().rect.width;
         GenerateTiles();
     }
 
     void GenerateTiles()
     {
-        float x_offset = -(_gameManager.HowManyChars() * _buttonSize * 0.5f);
-        for (int i = 0; i < _gameManager.HowManyChars(); i++)
+        int howManyChars = WordleScript.Instance.HowManyChars();
+        
+        float buttonWidth = _inputPreviewButton.GetComponent<RectTransform>().rect.width;
+        // float buttonHeight = _inputPreviewButton.GetComponent<RectTransform>().rect.height;
+        
+        float x_offset = -(howManyChars * buttonWidth * 0.5f);
+        for (int i = 0; i < howManyChars; i++)
         {
             GameObject go = Instantiate(_inputPreviewButton, transform);
             go.transform.position = new Vector2(transform.position.x + x_offset, transform.position.y);
