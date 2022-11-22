@@ -79,6 +79,7 @@ public class WordleScript : MonoBehaviour
         
         if (guesses.Contains(guess))
         {
+            StatusTextScript.Instance.ShowMessage("You already guessed that!", Color.white, 2f);
             return; // avoid same guess
         }
         
