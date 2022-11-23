@@ -1,6 +1,4 @@
-using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 
 [RequireComponent(typeof(WordChecker))]
@@ -99,14 +97,14 @@ public class WordleScript : MonoBehaviour
         }
     }
 
-    void Winner()
+    private void Winner()
     {
         _gameOver = true;
         Keyboard.Instance.DisableKeyboard();
         StatusTextScript.Instance.ShowMessage("Winner!", Colors()["correct"]);
     }
 
-    void Loser()
+    private void Loser()
     {
         _gameOver = true;
         Keyboard.Instance.DisableKeyboard();

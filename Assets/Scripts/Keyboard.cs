@@ -1,96 +1,124 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Numerics;
 using TMPro;
 using UnityEngine;
-using UnityEngine.PlayerLoop;
 using UnityEngine.UI;
-using Vector2 = UnityEngine.Vector2;
-using Vector3 = UnityEngine.Vector3;
 
 public class Keyboard : MonoBehaviour
 {
-    [SerializeField] private Color _defaultColor;
-    [SerializeField] private GameObject characterKey;
-    [SerializeField] private GameObject enterKey;
-    [SerializeField] private GameObject backspaceKey;
+    [SerializeField] private Color _defaultColor; 
+    [SerializeField] private GameObject _characterKeyPrefab;
+    [SerializeField] private GameObject _enterKeyPrefab;
+    [SerializeField] private GameObject _backspaceKeyPrefab;
+    [SerializeField] private InputPreview _inputPreview;
     
     public static Keyboard Instance { get; private set; }
-    private InputPreview _inputPreview;
     private RectTransform _rt;
-
-    private int charIndex; // = 0
-    private char[] entry;
-
+    private int _charIndex; // = 0
+    private char[] _entry;
+    private bool _activated;
     private List<Button> _buttons = new List<Button>();
 
-    private bool _activated;
-
-
-    private char[] keyboardLayout = new char[]
+    private char[] _keyboardLayout = new char[]
     {
         'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P',
         'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L',
         'Z', 'X', 'C', 'V', 'B', 'N', 'M'
     };
 
+    private Rect _rect;
+    private Vector2 _characterKeySize;
+    private Vector2 _backspaceKeySize;
+    private Vector2 _enterKeySize;
+
+    void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this.gameObject);
+        }
+        else
+        {
+            Instance = this;
+        }
+        
+        _rt = GetComponent<RectTransform>();
+        
+        // cache size of panel
+        _rect = _rt.rect;
+        
+        // cache sizes of keys
+        _characterKeySize = _characterKeyPrefab.GetComponent<RectTransform>().rect.size;
+        _backspaceKeySize = _backspaceKeyPrefab.GetComponent<RectTransform>().rect.size;
+        _enterKeySize = _enterKeyPrefab.GetComponent<RectTransform>().rect.size; 
+        
+        GenerateKeyboard();
+    }
+
+    void Start()
+    {
+        CleanUp();
+    }
+    
     void GenerateKeyboard()
     {
-        float start_x = _rt.rect.width / 2.5f;
-        float start_y = _rt.rect.height / 3f;
+        float startX = transform.position.x - _rect.size.x * 0.5f + _characterKeySize.x;
+        float startY = transform.position.y + (_rect.size.y * 0.5f) - _characterKeySize.y;
 
-        float x_offset = -start_x;
-        float y_offset = +start_y;
+        float xOffset = 0;
+        float yOffset = 0;
 
-        foreach (char c in keyboardLayout)
+        foreach (char c in _keyboardLayout)
         {
-            // Debug.Log(c);
             char letter = c;
-            GameObject go = Instantiate(characterKey, transform);
-            go.transform.position = new Vector2(transform.position.x + x_offset, transform.position.y + y_offset);
+            
+            GameObject go = Instantiate(_characterKeyPrefab, transform);
+            go.name = c + " key";
+            go.transform.position = new Vector2(startX + xOffset, startY + yOffset);
             go.GetComponentInChildren<TMP_Text>().text = letter.ToString();
-
             go.GetComponent<Button>().onClick.AddListener(() => { PressedCharacterKey(letter); });
-
             _buttons.Add(go.GetComponent<Button>());
 
             if (c == 'P')
             {
                 // new row
-                x_offset = -start_x;
-                y_offset -= 32f;
+                xOffset = 0;
+                yOffset -= _characterKeySize.y;
             }
             else if (c == 'L')
             {
-                x_offset += 32f;
-                GameObject backspaceKeyGO = Instantiate(backspaceKey, transform);
-                backspaceKeyGO.transform.position =
-                    new Vector2(transform.position.x + x_offset, transform.position.y + y_offset);
+                // add backspace button
+                xOffset += _backspaceKeySize.x;
+                GameObject backspaceKeyGO = Instantiate(_backspaceKeyPrefab, transform);
+                backspaceKeyGO.name = "Backspace key";
+                backspaceKeyGO.transform.position = new Vector2(startX + xOffset, startY + yOffset);
                 backspaceKeyGO.GetComponent<Button>().onClick.AddListener(PressedBackspaceKey);
 
-                y_offset -= 32f;
-                x_offset = -start_x;
+                // new row
+                yOffset -= _characterKeySize.y;
+                xOffset = 0;
             }
             else if (c == 'M')
             {
-                x_offset += 64f;
-                GameObject enterKeyGO = Instantiate(enterKey, transform);
-                enterKeyGO.transform.position =
-                    new Vector2(transform.position.x + x_offset, transform.position.y + y_offset);
+                // last letter: add enter key
+                xOffset += _enterKeySize.x - _characterKeySize.x;
+                GameObject enterKeyGO = Instantiate(_enterKeyPrefab, transform);
+                enterKeyGO.name = "Enter key";
+                enterKeyGO.transform.position = new Vector2(startX + xOffset, startY + yOffset);
                 enterKeyGO.GetComponent<Button>().onClick.AddListener(PressedEnterKey);
             }
             else
             {
-                x_offset += 32f;
+                xOffset += _characterKeySize.x;
             }
         }
     }
 
     void UpdateButtonColors()
     {
-        for (int i = 0; i < keyboardLayout.Length; i++)
+        for (int i = 0; i < _keyboardLayout.Length; i++)
         {
-            char c = keyboardLayout[i];
+            char c = _keyboardLayout[i];
             if (WordleScript.Instance.CorrectChars().Contains(c))
             {
                 SetColor(i, WordleScript.Instance.Colors()["correct"]);
@@ -133,40 +161,17 @@ public class Keyboard : MonoBehaviour
     
     void ClearEntry()
     {
-        entry = new char[WordleScript.Instance.HowManyChars()];
-        for (int i = 0; i < entry.Length; i++)
+        _entry = new char[WordleScript.Instance.HowManyChars()];
+        for (int i = 0; i < _entry.Length; i++)
         {
             _inputPreview.SetCharacter(i, ' ');
         }
-
-        charIndex = 0;
+        _charIndex = 0;
     }
-
-    void Awake()
-    {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(this.gameObject);
-        }
-        else
-        {
-            Instance = this;
-        }
-
-        _inputPreview = FindObjectOfType<InputPreview>();
-        _rt = GetComponent<RectTransform>();
-        GenerateKeyboard();
-    }
-
-    void Start()
-    {
-        
-        CleanUp();
-    }
-
+    
     public void PressedCharacterKey(char c)
     {
-        if (charIndex >= WordleScript.Instance.HowManyChars())
+        if (_charIndex >= WordleScript.Instance.HowManyChars())
         {
             return;
         }
@@ -176,9 +181,9 @@ public class Keyboard : MonoBehaviour
             return;
         }
 
-        entry[charIndex] = c;
-        _inputPreview.SetCharacter(charIndex, c);
-        charIndex += 1;
+        _entry[_charIndex] = c;
+        _inputPreview.SetCharacter(_charIndex, c);
+        _charIndex += 1;
     }
 
     public void PressedEnterKey()
@@ -187,7 +192,7 @@ public class Keyboard : MonoBehaviour
         {
             return;
         }
-        WordleScript.Instance.MakeGuess(entry.ArrayToString());
+        WordleScript.Instance.MakeGuess(_entry.ArrayToString());
         UpdateButtonColors();
         ClearEntry();
     }
@@ -199,13 +204,13 @@ public class Keyboard : MonoBehaviour
             return;
         }
 
-        charIndex -= 1;
-        if (charIndex <= 0)
+        _charIndex -= 1;
+        if (_charIndex <= 0)
         {
-            charIndex = 0;
+            _charIndex = 0;
         }
         
-        _inputPreview.SetCharacter(charIndex, ' ');
+        _inputPreview.SetCharacter(_charIndex, ' ');
     }
     
     public void SetColor(int keyIndex, Color col)
@@ -218,11 +223,11 @@ public class Keyboard : MonoBehaviour
     IEnumerator KeyboardShake(float duration)
     {
         Vector3 startPos = transform.position;
-        float timeStarted = Time.time;
+        float timeDone = Time.time + duration;
 
         bool lastRight = false;
         
-        while (Time.time < (timeStarted + duration))
+        while (Time.time < timeDone)
         {
             if (lastRight)
             {
