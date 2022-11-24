@@ -11,7 +11,12 @@ public class GuessParent : MonoBehaviour
     private List<Button> _guessObjectsButtons = new List<Button>();
     private List<TMP_Text> _guessObjectsTexts = new List<TMP_Text>();
     private int _settingCharsPerWord;
-    
+    private Rect _tileRect;
+
+    void Awake()
+    {
+        _tileRect = _guessPrefab.GetComponent<RectTransform>().rect;
+    }
     
     private void CleanUp()
     {
@@ -36,17 +41,17 @@ public class GuessParent : MonoBehaviour
     public void InitializeGuesses(int guessAmount, int charsPerWord)
     {
         CleanUp();
-        
-        float buttonWidth = _guessPrefab.GetComponent<RectTransform>().rect.width;
-        float buttonHeight = _guessPrefab.GetComponent<RectTransform>().rect.height;
-        float x_width = charsPerWord * buttonWidth;
+
+        float buttonWidth = _tileRect.width;
+        float buttonHeight = _tileRect.height;
         float y_offset = 0;
+
+        float startX = transform.position.x - (0.5f * charsPerWord * buttonWidth);
         
         for (int i = 0; i < guessAmount; i++)
         {
             for (int c = 0; c < charsPerWord; c++)
             {
-                float x_offset = -(x_width / 2) + (c * buttonWidth);
                 GameObject go = Instantiate(_guessPrefab, this.transform);
                 go.name = "Tile " + i + "-" + c;
 
@@ -55,7 +60,7 @@ public class GuessParent : MonoBehaviour
                 TMP_Text to = go.GetComponentInChildren<TMP_Text>();
                 to.text = "";
 
-                go.transform.position = new Vector3(transform.position.x + x_offset, transform.position.y + y_offset,
+                go.transform.position = new Vector3(startX + buttonWidth * c + (buttonWidth*0.5f), transform.position.y + y_offset,
                     transform.position.z);
 
                 _guessObjects.Add(go);

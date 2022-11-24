@@ -218,6 +218,7 @@ public class Keyboard : MonoBehaviour
         ColorBlock cb = _buttons[keyIndex].colors;
         cb.normalColor = col;
         _buttons[keyIndex].colors = cb;
+
     }
 
     IEnumerator KeyboardShake(float duration)
