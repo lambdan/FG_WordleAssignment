@@ -320,8 +320,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 5.1713, y: -10.3048}
-  m_SizeDelta: {x: 845.24, y: 109.3904}
+  m_AnchoredPosition: {x: -0.00000095367, y: -82}
+  m_SizeDelta: {x: 845.24, y: 65}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &386822030
 MonoBehaviour:
@@ -1018,7 +1018,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: beea3b0def2a8094493a6babfe8b06aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _guessPrefab: {fileID: 4218325413792601450, guid: ff2f89d25ee0e4d488942ef7a0e0b6d2, type: 3}
+  _guessTilePrefab: {fileID: 4218325413792601450, guid: ff2f89d25ee0e4d488942ef7a0e0b6d2, type: 3}
 --- !u!1 &1625153966
 GameObject:
   m_ObjectHideFlags: 0
