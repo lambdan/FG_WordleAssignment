@@ -1,47 +1,41 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class GuessParent : MonoBehaviour
 {
-    [SerializeField] private GameObject _guessPrefab;
+    [SerializeField] private GameObject _guessTilePrefab;
 
     private List<GameObject> _guessObjects = new List<GameObject>();
     private List<Button> _guessObjectsButtons = new List<Button>();
     private List<TMP_Text> _guessObjectsTexts = new List<TMP_Text>();
     private int _settingCharsPerWord;
     private Rect _tileRect;
+    private Color _defaultTileColor;
 
     void Awake()
     {
-        _tileRect = _guessPrefab.GetComponent<RectTransform>().rect;
+        _tileRect = _guessTilePrefab.GetComponent<RectTransform>().rect;
+        _defaultTileColor = _guessTilePrefab.GetComponent<Button>().colors.disabledColor;
     }
     
-    private void CleanUp()
+    public void Clear()
     {
-        foreach (GameObject go in _guessObjects)
+        for (int i = 0; i < _guessObjectsButtons.Count; i++)
         {
-            Destroy(go);
-        } 
-        foreach (Button bo in _guessObjectsButtons)
-        {
-            Destroy(bo);
-        }
-        foreach (TMP_Text to in _guessObjectsTexts)
-        {
-            Destroy(to);
+            SetColor(i, _defaultTileColor);
         }
         
-        _guessObjects.Clear();
-        _guessObjectsButtons.Clear();
-        _guessObjectsTexts.Clear();
+        foreach (TMP_Text txt in _guessObjectsTexts)
+        {
+            txt.text = "";
+        }
     }
     
     public void InitializeGuesses(int guessAmount, int charsPerWord)
     {
-        CleanUp();
-
         float buttonWidth = _tileRect.width;
         float buttonHeight = _tileRect.height;
         float y_offset = 0;
@@ -52,7 +46,7 @@ public class GuessParent : MonoBehaviour
         {
             for (int c = 0; c < charsPerWord; c++)
             {
-                GameObject go = Instantiate(_guessPrefab, this.transform);
+                GameObject go = Instantiate(_guessTilePrefab, this.transform);
                 go.name = "Tile " + i + "-" + c;
 
                 Button bo = go.GetComponentInChildren<Button>();
@@ -79,18 +73,19 @@ public class GuessParent : MonoBehaviour
 
         for (int i = 0; i < _settingCharsPerWord; i++)
         {
-            _guessObjectsTexts[indexOffset + i].text = guess[i].ToString().ToUpper();
+            int idx = indexOffset + i;
+            _guessObjectsTexts[idx].text = guess[i].ToString().ToUpper();
 
             if (guess[i].ToString().ToUpper() == correctWord[i].ToString().ToUpper())
             {
-                SetColor(indexOffset + i, WordleScript.Instance.Colors()["correct"]);
+                SetColor(idx, WordleScript.Instance.Colors()["correct"]);
             } else if (correctWord.ToUpper().Contains(guess[i].ToString().ToUpper()))
             {
-                SetColor(indexOffset + i, WordleScript.Instance.Colors()["semi"]);
+                SetColor(idx, WordleScript.Instance.Colors()["semi"]);
             }
             else
             {
-                SetColor(indexOffset + i, WordleScript.Instance.Colors()["wrong"]);
+                SetColor(idx, WordleScript.Instance.Colors()["wrong"]);
             }
         }
     }

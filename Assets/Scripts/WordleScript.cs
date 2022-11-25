@@ -50,8 +50,8 @@ public class WordleScript : MonoBehaviour
         // re init
         targetWord = WordleDictionary.GetRandomWord().ToUpper();
         Debug.Log("targetWord: " + targetWord);
-        _guessParent.InitializeGuesses(_guessesAllowed, _charsPerWord);
-        
+        _guessParent.Clear();
+
     }
 
     public void MakeGuess(string guess)
@@ -128,8 +128,8 @@ public class WordleScript : MonoBehaviour
 
     void Start()
     {
+        _guessParent.InitializeGuesses(_guessesAllowed, _charsPerWord);
         NewGame();
-        
     }
 
     public void AddWrongChar(char c)

@@ -23,6 +23,7 @@ public class InputPreview : MonoBehaviour
         for (int i = 0; i < howManyChars; i++)
         {
             GameObject go = Instantiate(_inputPreviewButton, transform);
+            go.name = "Preview Tile " + i;
             go.transform.position = new Vector2(startX + buttonWidth * i + (buttonWidth * 0.5f), transform.position.y);
 
             TMP_Text to = go.GetComponentInChildren<TMP_Text>();
