@@ -18,6 +18,7 @@ public class Keyboard : MonoBehaviour
     private char[] _entry;
     private bool _activated;
     private List<Button> _buttons = new List<Button>();
+    private bool _shaking;
 
     private char[] _keyboardLayout = new char[]
     {
@@ -223,6 +224,12 @@ public class Keyboard : MonoBehaviour
 
     IEnumerator KeyboardShake(float duration)
     {
+        if (_shaking)
+        {
+            yield break;
+        }
+        
+        _shaking = true;
         Vector3 startPos = transform.position;
         float timeDone = Time.time + duration;
 
@@ -244,5 +251,6 @@ public class Keyboard : MonoBehaviour
             yield return new WaitForSeconds(duration/20f);
         }
         transform.position = startPos;
+        _shaking = false;
     }
 }
