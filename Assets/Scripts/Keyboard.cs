@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -59,6 +60,38 @@ public class Keyboard : MonoBehaviour
     void Start()
     {
         CleanUp();
+    }
+
+    void OnGUI()
+    {
+        // get input from physical keyboard
+        if (Event.current.isKey && Event.current.type == EventType.KeyDown)
+        {
+            if (Event.current.keyCode != KeyCode.None)
+            {
+                InterpretKeyboardInput(Event.current.keyCode);
+            }
+        }
+    }
+
+    void InterpretKeyboardInput(KeyCode kc)
+    {
+        if (kc == KeyCode.Backspace)
+        {
+            PressedBackspaceKey();
+        } else if (kc == KeyCode.Return)
+        {
+            PressedEnterKey();
+        }
+        else
+        {
+            char c = kc.ToString()[0];
+            if (_keyboardLayout.Contains(c))
+            {
+                PressedCharacterKey(c);
+            }
+        }
+        
     }
     
     void GenerateKeyboard()

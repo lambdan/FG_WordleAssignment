@@ -108,7 +108,7 @@ public class WordleScript : MonoBehaviour
     {
         _gameOver = true;
         Keyboard.Instance.DisableKeyboard();
-        StatusTextScript.Instance.ShowMessage("Loser! The word was: " + targetWord, Colors()["wrong"]);
+        StatusTextScript.Instance.ShowMessage("Loser! The word was: " + targetWord, Color.red);
     }
     
     void Awake()
@@ -193,15 +193,4 @@ public class WordleScript : MonoBehaviour
     {
         return targetWord;
     }
-
-    public int GuessesAllowed()
-    {
-        return _guessesAllowed;
-    }
-
-    public List<string> GuessesMade()
-    {
-        return guesses;
-    }
-    
 }
