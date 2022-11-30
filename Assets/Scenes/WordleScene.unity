@@ -730,7 +730,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1222148995}
   - component: {fileID: 1222148994}
-  - component: {fileID: 1222148996}
   m_Layer: 0
   m_Name: Wordle (game manager)
   m_TagString: Untagged
@@ -755,7 +754,6 @@ MonoBehaviour:
   _correctColor: {r: 0, g: 0.4433962, b: 0.02441621, a: 1}
   _wordsFile: {fileID: 4900000, guid: 896282708ce75074596aa35a45a85cd2, type: 3}
   _guessParent: {fileID: 1543297463}
-  _charsPerWord: 5
   _guessesAllowed: 5
 --- !u!4 &1222148995
 Transform:
@@ -772,18 +770,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1222148996
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1222148993}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a2a7ccfad1decca4eb53e3c590d61315, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1352460952
 GameObject:
   m_ObjectHideFlags: 0
