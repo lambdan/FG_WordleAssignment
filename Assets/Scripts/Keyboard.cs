@@ -153,15 +153,15 @@ public class Keyboard : MonoBehaviour
         for (int i = 0; i < _keyboardLayout.Length; i++)
         {
             char c = _keyboardLayout[i];
-            if (WordleScript.Instance.CorrectChars().Contains(c))
+            if (WordleScript.Instance.GetCharSet("correct").Contains(c))
             {
                 SetColor(i, WordleScript.Instance.Colors()["correct"]);
             }
-            else if (WordleScript.Instance.SemiChars().Contains(c))
+            else if (WordleScript.Instance.GetCharSet("semi").Contains(c))
             {
                 SetColor(i, WordleScript.Instance.Colors()["semi"]);
             }
-            else if (WordleScript.Instance.WrongChars().Contains(c))
+            else if (WordleScript.Instance.GetCharSet("wrong").Contains(c))
             {
                 SetColor(i, WordleScript.Instance.Colors()["wrong"]);
             }

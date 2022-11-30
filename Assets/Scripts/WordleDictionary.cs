@@ -24,12 +24,8 @@ public static class WordleDictionary
     public static void SetWords(string[] wordsArray)
     {
         _words = wordsArray;
-
-        // add words to a hashset, because checking if a hashset contains something is faster
-        _wordsHashSet = new HashSet<string>();
-        foreach (string s in wordsArray)
-        {
-            _wordsHashSet.Add(s);
-        }
+        
+        // also make a hashset of the words because its faster to check if the word exists
+        _wordsHashSet = new HashSet<string>(wordsArray);
     }
 }

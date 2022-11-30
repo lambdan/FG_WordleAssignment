@@ -11,30 +11,55 @@ public class WordleScript : MonoBehaviour
 
     public static WordleScript Instance { get; private set; }
 
-    [Header("Settings")]
-    [Range(1,10)][SerializeField] private int _guessesAllowed = 5;
+    [Header("Settings")] [Range(1, 10)] [SerializeField]
+    private int _guessesAllowed = 5;
 
     private bool _gameOver;
-    private int _guessesMade;
     private int _charsPerWord;
     private string _targetWord;
 
-    private List<string> guesses = new List<string>();
-    private List<char> _wrongChars = new List<char>();
-    private List<char> _semiChars = new List<char>();
-    private List<char> _correctChars = new List<char>();
+    private HashSet<string> _guesses;
+    private Dictionary<string, HashSet<char>> _characters;
+
+    void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this.gameObject);
+        }
+        else
+        {
+            Instance = this;
+        }
+
+        InitializeWordDictionary();
+
+        _characters = new Dictionary<string, HashSet<char>>();
+        _characters.Add("wrong", new HashSet<char>());
+        _characters.Add("semi", new HashSet<char>());
+        _characters.Add("correct", new HashSet<char>());
+        _guesses = new HashSet<string>();
+    }
+
+    void Start()
+    {
+        _guessParent.InitializeGuesses(_guessesAllowed, _charsPerWord);
+        NewGame();
+    }
+
 
     void InitializeWordDictionary()
     {
         string[] words = _wordsFile.text.Split("\n");
-        
+
         // trim words (to get rid of newlines etc.) and convert to uppercase
         for (int i = 0; i < words.Length; i++)
         {
             words[i] = words[i].Trim().ToUpper();
         }
+
         _charsPerWord = words[0].Length; // set word length
-        
+
         // give the words to the dictionary
         WordleDictionary.SetWords(words);
     }
@@ -42,15 +67,14 @@ public class WordleScript : MonoBehaviour
     public void NewGame()
     {
         // cleanup
+        _characters["wrong"].Clear();
+        _characters["semi"].Clear();
+        _characters["correct"].Clear();
+        _guesses.Clear();
         StatusTextScript.Instance.Hide();
-        _wrongChars.Clear();
-        _semiChars.Clear();
-        _correctChars.Clear();
-        guesses.Clear();
-        _gameOver = false;
-        _guessesMade = 0;
         Keyboard.Instance.CleanUp();
         Keyboard.Instance.EnableKeyboard();
+        _gameOver = false;
 
         // re init
         _targetWord = WordleDictionary.GetRandomWord().ToUpper();
@@ -64,7 +88,7 @@ public class WordleScript : MonoBehaviour
         {
             return;
         }
-        
+
         if (!WordleDictionary.IsInDictionary(guess))
         {
             Keyboard.Instance.Shake();
@@ -77,15 +101,14 @@ public class WordleScript : MonoBehaviour
             return;
         }
 
-        if (guesses.Contains(guess))
+        if (_guesses.Contains(guess))
         {
             StatusTextScript.Instance.ShowMessage("You already guessed that!", Color.white, 2f);
             return; // avoid same guess
         }
 
-        _guessParent.SetGuess(_guessesMade, guess, _targetWord);
-        _guessesMade += 1;
-        guesses.Add(guess);
+        _guessParent.SetGuess(_guesses.Count, guess, _targetWord);
+        _guesses.Add(guess);
         CheckGuess(guess);
 
 
@@ -93,7 +116,7 @@ public class WordleScript : MonoBehaviour
         {
             Winner();
         }
-        else if (_guessesMade == _guessesAllowed)
+        else if (_guesses.Count == _guessesAllowed)
         {
             Loser();
         }
@@ -113,69 +136,19 @@ public class WordleScript : MonoBehaviour
         StatusTextScript.Instance.ShowMessage("Loser! The word was: " + _targetWord, Color.red);
     }
 
-    void Awake()
+    public void AddChar(string set, char c)
     {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(this.gameObject);
-        }
-        else
-        {
-            Instance = this;
-        }
-
-        InitializeWordDictionary();
-    }
-
-    void Start()
-    {
-        _guessParent.InitializeGuesses(_guessesAllowed, _charsPerWord);
-        NewGame();
-    }
-
-    public void AddWrongChar(char c)
-    {
-        if (_wrongChars.Contains(c))
+        if (_characters[set].Contains(c))
         {
             return;
         }
 
-        _wrongChars.Add(c);
+        _characters[set].Add(c);
     }
 
-    public void AddSemiChar(char c)
+    public HashSet<char> GetCharSet(string set)
     {
-        if (_semiChars.Contains(c))
-        {
-            return;
-        }
-
-        _semiChars.Add(c);
-    }
-
-    public void AddCorrectChar(char c)
-    {
-        if (_correctChars.Contains(c))
-        {
-            return;
-        }
-
-        _correctChars.Add(c);
-    }
-
-    public List<char> WrongChars()
-    {
-        return _wrongChars;
-    }
-
-    public List<char> SemiChars()
-    {
-        return _semiChars;
-    }
-
-    public List<char> CorrectChars()
-    {
-        return _correctChars;
+        return _characters[set];
     }
 
     public Dictionary<string, Color> Colors()
@@ -199,15 +172,15 @@ public class WordleScript : MonoBehaviour
         {
             if (guess[i] == _targetWord[i])
             {
-                AddCorrectChar(guess[i]);
+                AddChar("correct", guess[i]);
             }
             else if (_targetWord.Contains(guess[i]))
             {
-                AddSemiChar(guess[i]);
+                AddChar("semi", guess[i]);
             }
             else
             {
-                AddWrongChar(guess[i]);
+                AddChar("wrong", guess[i]);
             }
         }
     }
