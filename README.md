@@ -1,5 +1,7 @@
 # FG_WordleAssignment
 
+Unity version: 2021.3.8f1
+
 Word list grabbed from: https://github.com/tabatkins/wordle-list
 
 Playable on itch.io: https://lambdan.itch.io/wordle-assignment?secret=5w4BejgzNTb027vtlotRZgcUmR4
